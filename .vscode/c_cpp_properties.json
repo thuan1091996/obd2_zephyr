@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "configurationProvider": "nrf-connect",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/ncs/v2.3.0/zephyr/include"
+            ],
+            "mergeConfigurations": true
+        }
+    
+    ],
+    "version": 4
+}

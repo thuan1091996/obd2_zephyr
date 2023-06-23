@@ -1,0 +1,6 @@
+[submodule "ncs-uart-handler"]
+	path = ncs-uart-handler
+	url = https://github.com/thuan1091996/ncs-uart-handler.git
+[submodule "qpc"]
+	path = qpc
+	url = https://github.com/QuantumLeaps/qpc.git
