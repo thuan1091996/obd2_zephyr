@@ -32,7 +32,7 @@
 #include <zephyr/logging/log.h>
 
 /* Applications include */
-#include "common.h"
+#include "app_uart.h"
 
 /* Low level driver relatives */
 #include "uart_handler.h"
@@ -49,13 +49,15 @@
 /******************************************************************************
 * Macros
 *******************************************************************************/
+Q_DEFINE_THIS_FILE
+
 /* Logging relative */
 #define MODULE_NAME			        uart_app
 #define MODULE_LOG_LEVEL	        LOG_LEVEL_INF
 LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
 
-Q_DEFINE_THIS_FILE
 
+K_MUTEX_DEFINE(uart_send_mutex);
 /******************************************************************************
 * Typedefs
 *******************************************************************************/
@@ -78,9 +80,9 @@ static void on_app_uart_event(struct app_uart_evt_t *evt)
 	switch(evt->type) {
 		case APP_UART_EVT_RX:
 			// Print the incoming data to the console
-			// printk("RX ");
-			// for(int i = 0; i < evt->data.rx.length; i++) printk("%.2x ", evt->data.rx.bytes[i]);
-			// printk("\n");
+			LOG_DBG("Received %d bytes", evt->data.rx.length);
+			LOG_HEXDUMP_DBG(evt->data.rx.bytes, evt->data.rx.length, "Data: ");
+			
             status = bt_nus_send(NULL, evt->data.rx.bytes, evt->data.rx.length);
             if (status != 0) 
             {
@@ -90,13 +92,13 @@ static void on_app_uart_event(struct app_uart_evt_t *evt)
 
 		// A UART error ocurred, such as a break or frame error condition
 		case APP_UART_EVT_ERROR:
-			printk("UART error: Reason %i\n", evt->data.error.reason);
+			LOG_ERR("UART error: Reason %i\n", evt->data.error.reason);
 			break;
 
 		// The UART event queue has overflowed. If this happens consider increasing the UART_EVENT_QUEUE_SIZE (will increase RAM usage),
 		// or increase the UART_RX_TIMEOUT_US parameter to avoid a lot of small RX packets filling up the event queue
 		case APP_UART_EVT_QUEUE_OVERFLOW:
-			printk("UART library error: Event queue overflow!\n");
+			LOG_ERR("UART library error: Event queue overflow!\n");
 			break;
 	}
 }
@@ -107,6 +109,33 @@ int uart_init(void)
     if(err != 0) {
         LOG_ERR("app_uart_init failed: %i\n", err);
     }
+}
+
+/**
+ * @brief Send data to UART
+ * 
+ * @param p_data: pointer to data
+ * @param len: length of data
+ * @param timeout: timeout in ms (The total time can be double this value)
+ * @return int: 0 if success, otherwise failed
+ */
+int uart_send(uint8_t* p_data, uint16_t len, uint32_t timeout)
+{
+	int err;
+	if(0 != (err = k_mutex_lock(&uart_send_mutex, K_MSEC(timeout))) )
+	{
+		LOG_ERR("k_mutex_lock failed: %i\n", err);
+		return err;
+	}
+	err = app_uart_send(p_data, len, K_MSEC(timeout));
+	if(err != 0) {
+		LOG_ERR("app_uart_send failed: %i\n", err);
+		return err;
+	}
+	LOG_INF("Sent %d bytes", len);
+	LOG_HEXDUMP_DBG(p_data, len, "Data: ");
+	k_mutex_unlock(&uart_send_mutex);
+	return 0;
 }
 
 #endif // APP_APP_UART_C_

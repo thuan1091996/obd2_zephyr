@@ -29,6 +29,7 @@
 /* Applications include */
 #include "app_ble.h"
 #include "common.h"
+#include "app_uart.h"
 
 /* Low level driver relatives */
 #include "bluetoothle.h"
@@ -165,6 +166,15 @@ void app_ble_adv_stopped_cb(void)
 void app_ble_nus_received(struct bt_conn *conn, const uint8_t *const data, uint16_t len)
 {
     LOG_INF("on app_ble_nus_received()");
+    int err = uart_send((uint8_t*)data, len, 5000); //Timeout 5s
+    if(!err)
+    {
+        LOG_INF("Successfully send %d B to UART", len);
+    }
+    else
+    {
+        LOG_INF("UART send failed, error %d", err);
+    }
 }
 
 void app_ble_nus_sent(struct bt_conn *conn)
