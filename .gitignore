@@ -1,3 +1,4 @@
 build/
 build_nrf52840/
+build_nrf52833/
 .cache/
