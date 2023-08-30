@@ -47,3 +47,6 @@
 
 /delete-node/ &{/pin-controller/pwm0_default/group1/};
 /delete-node/ &{/pin-controller/pwm0_sleep/group1/};
+&led3 {
+    gpios = <&gpio0 4 (GPIO_ACTIVE_LOW)>;
+};
