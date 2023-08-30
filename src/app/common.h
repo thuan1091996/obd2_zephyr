@@ -1,7 +1,7 @@
 /****************************************************************************
 * Title                 :    header file
 * Filename              :   common.h
-* Author                :   thuantm5
+* Author                :   ItachiVN
 * Origin Date           :   2023/03/19
 * Version               :   v0.0.0
 * Compiler              :   
@@ -12,7 +12,7 @@
 /*************** INTERFACE CHANGE LIST **************************************
 *
 *    Date    	Software Version    Initials   	Description
-*  2023/03/19    v0.0.0         	thuantm5      Interface Created.
+*  2023/03/19    v0.0.0         	ItachiVN      Interface Created.
 *
 *****************************************************************************/
 
@@ -40,12 +40,10 @@
 #define BLE_ACTOR_STACK_SIZE		        (1024)
 #define BLE_ACTOR_PRIO                      (CONFIG_NUM_PREEMPT_PRIORITIES - 10)
 
-#define LED_ACTOR_QUEUE_SIZE		        (10)
-#define LED_ACTOR_STACK_SIZE		        (512)
-#define LED_ACTOR_PRIO                      (CONFIG_NUM_PREEMPT_PRIORITIES - 9)
+#define OBD_ACTOR_QUEUE_SIZE		        (30)
+#define OBD_ACTOR_STACK_SIZE		        (1024)
+#define OBD_ACTOR_PRIO                      (CONFIG_NUM_PREEMPT_PRIORITIES - 9)
 
-#define BUTTON_PRIO                         (CONFIG_NUM_PREEMPT_PRIORITIES - 5)
-#define BUTTON_STACK_SIZE                   (512)
 
 
 #define BLE_ADV_TIMEOUT                     (30000U)
@@ -79,13 +77,7 @@ enum ApplicationEvt {
     BLE_ADV_TIMEOUT_SIG,            /* BLE advertising timeout without connection */
     BLE_TRIGGER_ADV_START_SIG,      /* Trigger BLE actor to advertising */
     BLE_TRIGGER_TERMINATE_CONN_SIG, /* Trigger BLE actor to terminate connection */
-    BUTTON_CLICK_SIG,
-    BUTTON_2CLICK_SIG,
-    BUTTON_3CLICK_SIG,
-    BUTTON_HOLD_SIG,
-    LED_ON_SIG,
-    LED_OFF_SIG,
-    LED_TRIGGER_BLINK_SIG,
+    UART_RX_SIG,                    /* UART RX event */
 };
 
 /******************************************************************************

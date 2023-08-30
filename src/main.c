@@ -1,7 +1,7 @@
 /*******************************************************************************
 * Title                 :    
 * Filename              :   
-* Author                :   thuantm5
+* Author                :   ItachiVN
 * Origin Date           :   2023/03/24
 * Version               :   0.0.0
 * Compiler              :   nRF Connect SDK v2.3.0
