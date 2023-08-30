@@ -1,7 +1,7 @@
 /****************************************************************************
 * Title                 :    header file
 * Filename              :   app_uart.h
-* Author                :   thuantm5
+* Author                :   ItachiVN
 * Origin Date           :   2023/06/23
 * Version               :   v0.0.0
 * Compiler              :   nRF connect SDK 2.3
@@ -12,7 +12,7 @@
 /*************** INTERFACE CHANGE LIST **************************************
 *
 *    Date    	Software Version    Initials   	Description
-*  2023/06/23    v0.0.0         	thuantm5      Interface Created.
+*  2023/06/23    v0.0.0         	ItachiVN      Interface Created.
 *
 *****************************************************************************/
 
@@ -106,7 +106,8 @@ static void on_app_uart_event(struct app_uart_evt_t *evt)
 int uart_init(void)
 {
     int err = app_uart_init(on_app_uart_event);
-    if(err != 0) {
+    if(err != 0) 
+	{
         LOG_ERR("app_uart_init failed: %i\n", err);
     }
 }
@@ -119,7 +120,7 @@ int uart_init(void)
  * @param timeout: timeout in ms (The total time can be double this value)
  * @return int: 0 if success, otherwise failed
  */
-int uart_send(uint8_t* p_data, uint16_t len, uint32_t timeout)
+int uart_send(const uint8_t* p_data, uint16_t len, uint32_t timeout)
 {
 	int err;
 	if(0 != (err = k_mutex_lock(&uart_send_mutex, K_MSEC(timeout))) )

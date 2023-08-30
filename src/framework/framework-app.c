@@ -1,7 +1,7 @@
 /*******************************************************************************
 * Title                 :    
 * Filename              :   framework-app.c
-* Author                :   thuantm5
+* Author                :   ItachiVN
 * Origin Date           :   2023/03/19
 * Version               :   0.0.0
 * Compiler              :   nRF connect SDK 2.3
@@ -12,7 +12,7 @@
 /*************** MODULE REVISION LOG ******************************************
 *
 *    Date       Software Version	Initials	Description
-*  2023/03/19       0.0.0	         thuantm5      Module Created.
+*  2023/03/19       0.0.0	         ItachiVN      Module Created.
 *
 *******************************************************************************/
 

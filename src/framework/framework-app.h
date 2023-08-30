@@ -1,7 +1,7 @@
 /****************************************************************************
 * Title                 :    header file
 * Filename              :   framework-app.h
-* Author                :   thuantm5
+* Author                :   ItachiVN
 * Origin Date           :   2023/03/19
 * Version               :   v0.0.0
 * Compiler              :   nRF connect SDK 2.3
@@ -12,7 +12,7 @@
 /*************** INTERFACE CHANGE LIST **************************************
 *
 *    Date    	Software Version    Initials   	Description
-*  2023/03/19    v0.0.0         	thuantm5      Interface Created.
+*  2023/03/19    v0.0.0         	ItachiVN      Interface Created.
 *
 *****************************************************************************/
 

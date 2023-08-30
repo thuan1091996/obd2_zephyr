@@ -77,8 +77,6 @@ void app_ble_adv_stopped_cb(void);
 void app_ble_nus_received(struct bt_conn *conn, const uint8_t *const data, uint16_t len);
 void app_ble_nus_sent(struct bt_conn *conn);
 void app_ble_nus_send_enabled(enum bt_nus_send_status status);
-
-void ble_actor_ctor(void);
 /******************************************************************************
 * Module Variable Definitions
 *******************************************************************************/
@@ -165,6 +163,7 @@ void app_ble_adv_stopped_cb(void)
 /* BLE nus callback */
 void app_ble_nus_received(struct bt_conn *conn, const uint8_t *const data, uint16_t len)
 {
+    (void)(conn);
     LOG_INF("on app_ble_nus_received()");
     int err = uart_send((uint8_t*)data, len, 5000); //Timeout 5s
     if(!err)
@@ -179,6 +178,7 @@ void app_ble_nus_received(struct bt_conn *conn, const uint8_t *const data, uint1
 
 void app_ble_nus_sent(struct bt_conn *conn)
 {
+    (void)(conn);
     LOG_INF("on app_ble_nus_sent()");
 }
 
@@ -189,27 +189,26 @@ void app_ble_nus_send_enabled(enum bt_nus_send_status status)
 }
 
 /* HSM definition ----------------------------------------------------------*/
-QState ble_initial(ble_actor_t * const me, QEvt const * const e) {
+static QState ble_initial(ble_actor_t * const me, QEvt const * const e) {
     (void)e;
     LOG_DBG("BLE state INITIAL, event %d", e->sig);
     for(uint8_t retry_count=0; retry_count < 5; retry_count++)
     {
-        if(!ble_init(&app_ble_cb) )
+        if(ble_init(&app_ble_cb) )
+            continue;
+        if (IS_ENABLED(CONFIG_BT_NUS))
         {
-            if (IS_ENABLED(CONFIG_BT_NUS))
+            /* Initialize the NUS service */
+            if (!bt_nus_init(&ble_nus_cb))
             {
-                /* Initialize the NUS service */
-                if (!bt_nus_init(&ble_nus_cb))
-                {
-                    LOG_INF("NUS service initialized");
-                }   
-                else
-                {
-                    LOG_ERR("NUS service initialization failed");
-                }
+                LOG_INF("NUS service initialized");
             }
-            return Q_TRAN(&ble_ready);
+            else
+            {
+                LOG_ERR("NUS service initialization failed");
+            }
         }
+        return Q_TRAN(&ble_ready);
     }
     LOG_ERR("BLE failed to initialize");
     //TODO: Add error handling
@@ -217,7 +216,7 @@ QState ble_initial(ble_actor_t * const me, QEvt const * const e) {
 }
 
 
-QState ble_ready(ble_actor_t * const me, QEvt const * const e) {
+static QState ble_ready(ble_actor_t * const me, QEvt const * const e) {
     QState status;
     LOG_DBG("BLE state READY, event %d", e->sig);
     switch (e->sig) 
@@ -261,7 +260,7 @@ QState ble_ready(ble_actor_t * const me, QEvt const * const e) {
     return status;
 }
 
-QState ble_advertising(ble_actor_t * const me, QEvt const * const e) {
+static QState ble_advertising(ble_actor_t * const me, QEvt const * const e) {
     QState status;  
     LOG_DBG("BLE state ADVERTISING, event %d", e->sig);
     switch (e->sig) {

@@ -12,7 +12,7 @@
 /*************** INTERFACE CHANGE LIST **************************************
 *
 *    Date    	Software Version    Initials   	Description
-*  2023/06/16    v0.0.0         	thuantm5      Interface Created.
+*  2023/06/16    v0.0.0         	ItachiVN      Interface Created.
 *
 *****************************************************************************/
 
