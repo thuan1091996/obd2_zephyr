@@ -61,12 +61,24 @@ K_MUTEX_DEFINE(uart_send_mutex);
 /******************************************************************************
 * Typedefs
 *******************************************************************************/
-
+typedef struct __attribute__((__packed__))
+{
+	uint8_t attr81;
+	
+	uint16_t attr161;
+	uint8_t attr82;
+	uint8_t atrr83;
+}device_data_t;
 
 /******************************************************************************
 * Variables
 *******************************************************************************/
-
+device_data_t device_data = {
+	.attr81 = 0x01,
+	.attr161 = 0x0203,
+	.attr82 = 0x04,
+	.atrr83 = 0x05
+};
 
 /******************************************************************************
 * Function Prototypes
@@ -82,8 +94,14 @@ static void on_app_uart_event(struct app_uart_evt_t *evt)
 			// Print the incoming data to the console
 			LOG_DBG("Received %d bytes", evt->data.rx.length);
 			LOG_HEXDUMP_DBG(evt->data.rx.bytes, evt->data.rx.length, "Data: ");
-			
-            status = bt_nus_send(NULL, evt->data.rx.bytes, evt->data.rx.length);
+			//TODO:
+			uint8_t temp[sizeof(device_data)];
+			memcpy(temp, &device_data, sizeof(device_data));
+			for(int i=0; i<sizeof(device_data); ++i) {
+				LOG_INF("Byte %d: 0x%02X\n", i, temp[i]);
+			}
+            // status = bt_nus_send(NULL, evt->data.rx.bytes, evt->data.rx.length);
+			status = bt_nus_send(NULL, temp, sizeof(temp));
             if (status != 0) 
             {
                 LOG_ERR("Failed to notify client (err %d)\n", status);
