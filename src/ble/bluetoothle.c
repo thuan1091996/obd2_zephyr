@@ -2,9 +2,9 @@
 * Title                 :   Bluetooth LE 
 * Filename              :   bluetoothle.c
 * Author                :   Itachi
-* Origin Date           :   2022/09/04
+* Origin Date           :   2022/08/31
 * Version               :   0.0.0
-* Compiler              :   NCS toolchain v2.0.0
+* Compiler              :   NCS toolchain v2.4.0
 * Target                :   nRF52840dk
 * Notes                 :   None
 *******************************************************************************/
