@@ -23,7 +23,6 @@
 #include "framework/framework-app.h"
 #include "app/common.h"
 #include "app/app_ble.h"
-#include "app/app_uart.h"
 
 
 

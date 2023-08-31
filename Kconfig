@@ -1,0 +1,6 @@
+source "Kconfig.zephyr"
+
+config BOARD_ENABLE_FEM
+bool "FEM enabled"
+default y
+select MPSL_FEM_GENERIC_TWO_CTRL_PINS_SUPPORT
