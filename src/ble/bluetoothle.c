@@ -36,7 +36,6 @@
 #define MODULE_LOG_LEVEL	        LOG_LEVEL_INF
 LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
 
-#define BLE_TEST_ADV_ONLY_CH37      (0) // 1: Only advertising on channel 37
 #define BLE_SCAN_RESP_SUPPORT       (0) // 1: Support scan response
 /******************************************************************************
 * Module Typedefs
@@ -45,16 +44,15 @@ LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
 /******************************************************************************
 * Module Variable Definitions
 *******************************************************************************/
-static const uint8_t custom_adv_data[] = {/* 0x1E, 0xFF,  */0x4C, 0x00, 0x12, 0x19, 0x10, 0x12, 0x12, 0x34, 0x56,
+//TODO: Update the custom_adv_data
+static uint8_t custom_adv_data[] = {/* 0x1E, 0xFF, */0x4C, 0x00, 0x12, 0x19, 0x10, 0x12, 0x12, 0x34, 0x56,
 0x78, 0x12, 0x34, 0x56, 0x78, 0x90, 0x12, 0x34, 0x56, 0x78, 0x90, 0x12, 0x34, 0x56, 0x12,  0x34, 0x56, 0x12, 0x45, 00};
 
-#if (BLE_SCAN_RESP_SUPPORT != 0)
-static const struct bt_data SCAN_RESP_DATA[] = {
+static const struct bt_data ADV_DATA[] = {
     BT_DATA(BT_DATA_MANUFACTURER_DATA, custom_adv_data, sizeof(custom_adv_data))
 };
-#endif /* End of (BLE_SCAN_RESP_SUPPORT != 0) */
 
-static const struct bt_data ADV_DATA[] = {
+static const struct bt_data SCAN_RESP_DATA[] = {
     BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
     BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
     BT_DATA(BT_DATA_GAP_APPEARANCE, ((uint16_t []) {BT_KEYBOARD_APPEARANCE}), sizeof(uint16_t))
@@ -107,25 +105,7 @@ int ble_adv_start(void)
 	bt_id_get(&addr, &count);
     bt_addr_le_to_str(&addr, addr_s, sizeof(addr_s));
 
-    LOG_INF("Advertising address: %s, ADV payload length: %d, Scan resp len %d",
-                                addr_s, ARRAY_SIZE(ADV_DATA) ,sizeof(custom_adv_data) + 2); //1 for ADV len + 1 for ADV type 
-
-#if (BLE_TEST_ADV_ONLY_CH37 != 0)
-
-    struct bt_le_adv_param adv_param =
-    {
-        .id = 0,
-        .sid = 0,
-        .options = BT_LE_ADV_OPT_CONNECTABLE,
-        .interval_min = BT_GAP_ADV_FAST_INT_MIN_1,
-        .interval_max = BT_GAP_ADV_FAST_INT_MAX_1,
-    };
-
-    //Dont advertising on channel 38 and 39
-    adv_param.options |= BT_LE_ADV_OPT_DISABLE_CHAN_38 | BT_LE_ADV_OPT_DISABLE_CHAN_39;
-
-	int errorcode = bt_le_adv_start(&adv_param, ADV_DATA, ARRAY_SIZE(ADV_DATA), NULL, 0);
-#endif /* End of (BLE_TEST_ADV_ONLY_CH37 != 0) */
+    LOG_INF("Advertising address: %s \n", addr_s);
 
 #if (BLE_SCAN_RESP_SUPPORT != 0)
     int errorcode = bt_le_adv_start(BT_LE_ADV_CONN, ADV_DATA, ARRAY_SIZE(ADV_DATA), SCAN_RESP_DATA, ARRAY_SIZE(SCAN_RESP_DATA));

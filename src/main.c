@@ -58,8 +58,7 @@ LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
 *******************************************************************************/
 void main(void)
 {
-	LOG_INF("BLE sample demo using %s", CONFIG_BOARD);
-	uart_init();
+	LOG_INF("-------------> System started <-------------");
 	framework_init();
 	ble_actor_ctor();
     ble_actor_start();
