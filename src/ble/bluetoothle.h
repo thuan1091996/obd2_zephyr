@@ -65,7 +65,7 @@ typedef struct
 int ble_init(ble_callback_t *cb);
 int ble_adv_start(void);
 int ble_adv_stop(void);
-
+int ble_set_adv_name(char* p_name);
 #endif // BLE_BLUETOOTHLE_H_
 
 /*** End of File **************************************************************/

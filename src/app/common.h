@@ -48,7 +48,11 @@
 
 #define BLE_ADV_TIMEOUT                     (30000U)
 
+#define SUCCESS                 0
+#define FAILURE                 -1
 
+#define param_check(param)	    if ( !(param) ) return FAILURE
+#define error_check(con, error) if ( con ) return error
 
 
 /******************************************************************************

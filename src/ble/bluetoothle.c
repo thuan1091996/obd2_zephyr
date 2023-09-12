@@ -25,17 +25,20 @@
 #include <zephyr/logging/log.h>
 #include "bluetoothle.h"
 #include "ble_gatt.h"
-
+#include "common.h"
 /******************************************************************************
+* Module configs
 *******************************************************************************/
-#define DEVICE_NAME		            CONFIG_BT_DEVICE_NAME
-#define DEVICE_NAME_LEN		        (sizeof(DEVICE_NAME) - 1) // Ignore null terminated
-#define BT_KEYBOARD_APPEARANCE       0x03C1  /* More on: https://specificationrefs.bluetooth.com/assigned-values/Appearance%20Values.pdf */
-
 /* Logging relative */
 #define MODULE_NAME			        bluetoothle
 #define MODULE_LOG_LEVEL	        LOG_LEVEL_INF
 LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
+
+#define ADV_DEFAULT_DEVICE_NAME     "nRF52-BLE"
+#define ADV_PACKET_MAX_LEN          (29)
+#define ADV_NAME_MAX_LEN            (29)
+#define BLE_CONFIG_ADV_NAME         (1)     /* 1 -> Include ADV name in the ADC packet*/
+
 
 /******************************************************************************
 * Module Typedefs
@@ -44,10 +47,11 @@ LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
 /******************************************************************************
 * Module Variable Definitions
 *******************************************************************************/
-static const struct bt_data ADV_DATA[] = {
-    BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
-    BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
-    BT_DATA(BT_DATA_GAP_APPEARANCE, ((uint16_t []) {BT_KEYBOARD_APPEARANCE}), sizeof(uint16_t))
+static char ADV_NAME[ADV_NAME_MAX_LEN] = ADV_DEFAULT_DEVICE_NAME;
+static struct bt_data ADV_DATA[] = 
+{
+    BT_DATA_BYTES(BT_DATA_UUID128_ALL,  BT_CUSTOM_SERV1_UUID),   /* Custom service UUID */
+    BT_DATA(BT_DATA_NAME_COMPLETE, ADV_NAME, sizeof(ADV_DEFAULT_DEVICE_NAME))  /* Device name */
 };
 
 /* Bluetooth applicatiton callbacks */
@@ -100,8 +104,9 @@ int ble_adv_start(void)
     {
         ble_cb_app.ble_adv_started_cb();
     }
-    return 0;
+    return SUCCESS;
 }
+
 int ble_adv_stop(void)
 {
     int errorcode = bt_le_adv_stop();
@@ -114,7 +119,7 @@ int ble_adv_stop(void)
     {
         ble_cb_app.ble_adv_stopped_cb();
     }
-    return 0;
+    return SUCCESS;
 }
 
 int ble_init(ble_callback_t* p_app_cb)
@@ -125,7 +130,7 @@ int ble_init(ble_callback_t* p_app_cb)
     static struct bt_conn_cb ble_cb = {
         .connected 		= &on_ble_connect,
         .disconnected 	= &on_ble_disconnect,
-        
+
     };
 
     LOG_INF("BLE initializing \n\r");
@@ -146,5 +151,28 @@ int ble_init(ble_callback_t* p_app_cb)
         return errorcode;
     }
     LOG_INF("BLE init succesfully");
-    return 0;
+    return SUCCESS;
+}
+
+int ble_set_adv_name(char* p_name)
+{
+    param_check(p_name != NULL);
+    if(strlen(p_name) > ADV_NAME_MAX_LEN)
+    {
+        LOG_ERR("BLE name too long, max length is %d", ADV_NAME_MAX_LEN);
+    }
+    // Find index of BT_DATA_NAME_COMPLETE in ADV_DATA[]
+    for(int index = 0; index < ARRAY_SIZE(ADV_DATA); index++)
+    {
+        if(ADV_DATA[index].type == BT_DATA_NAME_COMPLETE)
+        {
+            memset((void *)ADV_DATA[index].data, 0, ADV_DATA[index].data_len);
+            ADV_DATA[index].data_len = strlen(p_name);
+            memcpy((void *)ADV_DATA[index].data, p_name, strlen(p_name));
+            LOG_INF("BLE name set to %s", p_name);
+            return bt_le_adv_update_data(ADV_DATA, ARRAY_SIZE(ADV_DATA), NULL, 0);
+        }
+    }
+    LOG_ERR("Couldn't find BT_DATA_NAME_COMPLETE in ADV_DATA");
+    return FAILURE;
 }
