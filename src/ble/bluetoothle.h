@@ -30,6 +30,8 @@
 #include <zephyr/bluetooth/bluetooth.h>
 #include <zephyr/bluetooth/uuid.h>
 #include <zephyr/bluetooth/gatt.h>
+
+#include "ble_gatt.h"
 /******************************************************************************
 * Preprocessor Constants
 *******************************************************************************/

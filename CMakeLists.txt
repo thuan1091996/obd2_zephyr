@@ -22,6 +22,7 @@ src/ble/bluetoothle.c
     src/framework/framework-app.c
     
     src/ble/bluetoothle.c
+    src/ble/ble_gatt.c
     src/app/app_ble.c
     src/app/app_uart.c
 )

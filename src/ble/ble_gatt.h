@@ -38,25 +38,18 @@
 #define CUSTOM_SERVICE1_NAME    CUSTOM_SERVICE1
 #define BT_CUSTOM_SERV1_UUID    BT_UUID_128_ENCODE(0xe9ea0001, 0xe19b, 0x482d, 0x9293, 0xc7907585fc11)
 #define BT_CUSTOM_CHAR1_UUID    BT_UUID_128_ENCODE(0xe9ea0002, 0xe19b, 0x482d, 0x9293, 0xc7907585fc11)
+#define BT_CUSTOM_CHAR2_UUID    BT_UUID_128_ENCODE(0xe9ea0002, 0xe19b, 0x482d, 0x9293, 0xc7907585fc22)
+#define BT_CUSTOM_CHAR3_UUID    BT_UUID_128_ENCODE(0xe9ea0002, 0xe19b, 0x482d, 0x9293, 0xc7907585fc33)
+#define BT_CUSTOM_CHAR4_UUID    BT_UUID_128_ENCODE(0xe9ea0002, 0xe19b, 0x482d, 0x9293, 0xc7907585fc44)
+#define BT_CUSTOM_CHAR5_UUID    BT_UUID_128_ENCODE(0xe9ea0002, 0xe19b, 0x482d, 0x9293, 0xc7907585fc55)
 
 #define BT_UUID_CUSTOM_SERV1    BT_UUID_DECLARE_128(BT_CUSTOM_SERV1_UUID)
 #define BT_UUID_CUSTOM_CHAR1    BT_UUID_DECLARE_128(BT_CUSTOM_CHAR1_UUID)
-
-/** @brief UUID of the SERVICE2/ CHAR2 **/
-#define CUSTOM_SERVICE2_NAME    CUSTOM_SERVICE2
-#define BT_CUSTOM_SERV2_UUID    BT_UUID_128_ENCODE(0xe9ea0001, 0xe19b, 0x482d, 0x9293, 0xc7907585fc22)
-#define BT_CUSTOM_CHAR2_UUID    BT_UUID_128_ENCODE(0xe9ea0002, 0xe19b, 0x482d, 0x9293, 0xc7907585fc22)
-
-#define BT_UUID_CUSTOM_SERV2    BT_UUID_DECLARE_128(BT_CUSTOM_SERV2_UUID)
 #define BT_UUID_CUSTOM_CHAR2    BT_UUID_DECLARE_128(BT_CUSTOM_CHAR2_UUID)
-
-/** @brief UUID of the SERVICE2/ CHAR3 **/
-#define CUSTOM_SERVICE3_NAME    CUSTOM_SERVICE3
-#define BT_CUSTOM_SERV3_UUID    BT_UUID_128_ENCODE(0xe9ea0001, 0xe19b, 0x482d, 0x9293, 0xc7907585fc33)
-#define BT_CUSTOM_CHAR3_UUID    BT_UUID_128_ENCODE(0xe9ea0002, 0xe19b, 0x482d, 0x9293, 0xc7907585fc33)
-
-#define BT_UUID_CUSTOM_SERV3    BT_UUID_DECLARE_128(BT_CUSTOM_SERV3_UUID)
 #define BT_UUID_CUSTOM_CHAR3    BT_UUID_DECLARE_128(BT_CUSTOM_CHAR3_UUID)
+#define BT_UUID_CUSTOM_CHAR4    BT_UUID_DECLARE_128(BT_CUSTOM_CHAR4_UUID)
+#define BT_UUID_CUSTOM_CHAR5    BT_UUID_DECLARE_128(BT_CUSTOM_CHAR5_UUID)
+
 
 /******************************************************************************
 * Configuration Constants
@@ -67,11 +60,34 @@
 * Macros
 *******************************************************************************/
 
-
 /******************************************************************************
 * Typedefs
 *******************************************************************************/
+/* 
+ * @brief: GATT read callback
+ * @param [out] p_param: (reserved)
+ * @para [out] p_len: updated length of p_data
+ * @return: pointer to data of the attribute
+*/
+typedef void* (*ble_gatt_read_cb)(void* p_param, void* p_len); /* Custom GATT READ callbacks */
 
+/* 
+ * @brief: custom GATT write callback
+ * @param [in] p_data: pointer to data from GATT client
+ * @param [in] p_len: pointer that contain receive length from GATT client
+ * @return: (reserved)
+*/
+typedef int (*ble_gatt_write_cb)(void* p_data, void* p_len); /* BLE GATT callbacks custom service*/
+
+
+typedef struct
+{
+    ble_gatt_read_cb custom_char1_read_cb;    // Application callback for custom char 1 read evt
+    ble_gatt_read_cb custom_char2_read_cb;    // Application callback for custom char 2 read evt
+    ble_gatt_read_cb custom_char3_read_cb;    // Application callback for custom char 3 read evt
+    ble_gatt_read_cb custom_char4_read_cb;    // Application callback for custom char 4 read evt
+    ble_gatt_write_cb custom_char5_write_cb;   // Application callback for custom char 5 write evt
+}ble_custom_gatt_cb_t;
 
 /******************************************************************************
 * Variables
@@ -81,21 +97,8 @@
 /******************************************************************************
 * Function Prototypes
 *******************************************************************************/
-/** @brief SERVICE1/ CHAR1 **/
-ssize_t custom_char1_read_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, void *buf, uint16_t len, uint16_t offset);
-ssize_t	custom_char1_write_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, const void *buf, uint16_t len, uint16_t offset, uint8_t flags);
-void custom_char1_notify_changed(const struct bt_gatt_attr *attr, uint16_t value);
+void ble_custom_service_init(ble_custom_gatt_cb_t* ble_gatt_cb);
 
-
-/** @brief SERVICE2/ CHAR2 **/
-ssize_t custom_char2_read_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, void *buf, uint16_t len, uint16_t offset);
-ssize_t	custom_char2_write_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, const void *buf, uint16_t len, uint16_t offset, uint8_t flags);
-void custom_char2_notify_changed(const struct bt_gatt_attr *attr, uint16_t value);
-
-/** @brief SERVICE3/ CHAR3 **/
-ssize_t custom_char3_read_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, void *buf, uint16_t len, uint16_t offset);
-ssize_t	custom_char3_write_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, const void *buf, uint16_t len, uint16_t offset, uint8_t flags);
-void custom_char3_notify_changed(const struct bt_gatt_attr *attr, uint16_t value);
 
 
 
