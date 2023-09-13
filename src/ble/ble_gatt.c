@@ -2,7 +2,7 @@
 * Title                 :    
 * Filename              :   gatt_sensor.c
 * Author                :   thuantm5
-* Origin Date           :   2023/03/17
+* Origin Date           :   2023/09/12
 * Version               :   0.0.0
 * Compiler              :   nRF connect SDK 2.3
 * Target                :   nrf52
@@ -22,9 +22,11 @@
 /******************************************************************************
 * Includes
 *******************************************************************************/
-#include "bluetoothle.h"
+
 #include <zephyr/logging/log.h>
+#include "bluetoothle.h"
 #include "ble_gatt.h"
+#include "common.h"
 /******************************************************************************
 * Module Preprocessor Constants
 *******************************************************************************/
@@ -40,6 +42,14 @@ LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
 /******************************************************************************
 * Module Typedefs
 *******************************************************************************/
+
+
+/******************************************************************************
+* Module Variable Definitions
+*******************************************************************************/
+static bool g_char3_notify_en=false, g_char4_notify_en=false;
+static const struct bt_gatt_attr *p_char3_attr = NULL, *p_char4_attr = NULL; 
+
 static ble_custom_gatt_cb_t ble_custom_gatt_cb = 
 {
     .custom_char1_read_cb = NULL,
@@ -49,28 +59,7 @@ static ble_custom_gatt_cb_t ble_custom_gatt_cb =
     .custom_char5_write_cb = NULL,
 };
 
-/**
- * @brief Assigned application callbacks for custom char 1 - > custom char 5
- * @param ble_gatt_cb Application callbacks 
- */
-void ble_custom_service_init(ble_custom_gatt_cb_t* ble_gatt_cb)
-{
-    if(ble_gatt_cb != NULL)
-    {
-        ble_custom_gatt_cb.custom_char1_read_cb = ble_gatt_cb->custom_char1_read_cb;
-        ble_custom_gatt_cb.custom_char2_read_cb = ble_gatt_cb->custom_char2_read_cb;
-        ble_custom_gatt_cb.custom_char3_read_cb = ble_gatt_cb->custom_char3_read_cb;
-        ble_custom_gatt_cb.custom_char4_read_cb = ble_gatt_cb->custom_char4_read_cb;
-        ble_custom_gatt_cb.custom_char5_write_cb = ble_gatt_cb->custom_char5_write_cb;
-    }
-}
 
-
-/******************************************************************************
-* Module Variable Definitions
-*******************************************************************************/
-static bool g_char3_notify_en=false, g_char4_notify_en=false;
-uint16_t char123_value=0;
 /******************************************************************************
 * Static Function Prototypes
 *******************************************************************************/
@@ -78,15 +67,15 @@ static ssize_t custom_char1_read_cb(struct bt_conn *conn, const struct bt_gatt_a
 static ssize_t custom_char2_read_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, void *buf, uint16_t len, uint16_t offset);
 static ssize_t custom_char3_read_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, void *buf, uint16_t len, uint16_t offset);
 static ssize_t custom_char4_read_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, void *buf, uint16_t len, uint16_t offset);
-static void custom_char5_write_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, const void *buf, uint16_t len, uint16_t offset, uint8_t flags);
+static ssize_t custom_char5_write_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, const void *buf, uint16_t len, uint16_t offset, uint8_t flags);
 
 static void custom_char3_notify_changed(const struct bt_gatt_attr *attr, uint16_t value);
 static void custom_char4_notify_changed(const struct bt_gatt_attr *attr, uint16_t value);
 
-
 /******************************************************************************
-* Function Definitions
+* Static Function Definitions
 *******************************************************************************/
+
 static ssize_t custom_char1_read_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, void *buf, uint16_t len, uint16_t offset)
 {
     LOG_INF("CUSTOM_CHAR1 - ReadCB");
@@ -212,7 +201,7 @@ static ssize_t custom_char4_read_cb(struct bt_conn *conn, const struct bt_gatt_a
 }
 
 
-static void custom_char5_write_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
+static ssize_t custom_char5_write_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
 {
     ARG_UNUSED(conn);
     ARG_UNUSED(offset);
@@ -223,6 +212,7 @@ static void custom_char5_write_cb(struct bt_conn *conn, const struct bt_gatt_att
         int recv_len = len;
         ble_custom_gatt_cb.custom_char5_write_cb((void*)buf, &recv_len);
     }
+    return len;
 }
 
 void custom_char3_notify_changed(const struct bt_gatt_attr *attr, uint16_t value)
@@ -265,23 +255,74 @@ void custom_char4_notify_changed(const struct bt_gatt_attr *attr, uint16_t value
     LOG_INF("CUSTOM_CHAR4 notification %s.", g_char4_notify_en ? "enabled" : "disabled");
 }
 
+/******************************************************************************
+* Function Definitions
+*******************************************************************************/
+
+/**
+ * @brief Assigned application callbacks for custom char 1 - > custom char 5
+ * @param ble_gatt_cb Application callbacks 
+ */
+void ble_custom_service_init(ble_custom_gatt_cb_t* ble_gatt_cb)
+{
+    if(ble_gatt_cb != NULL)
+    {
+        ble_custom_gatt_cb.custom_char1_read_cb = ble_gatt_cb->custom_char1_read_cb;
+        ble_custom_gatt_cb.custom_char2_read_cb = ble_gatt_cb->custom_char2_read_cb;
+        ble_custom_gatt_cb.custom_char3_read_cb = ble_gatt_cb->custom_char3_read_cb;
+        ble_custom_gatt_cb.custom_char4_read_cb = ble_gatt_cb->custom_char4_read_cb;
+        ble_custom_gatt_cb.custom_char5_write_cb = ble_gatt_cb->custom_char5_write_cb;
+    }
+    // Get attribute pointer of char3 and char4 to support notification
+    p_char3_attr = bt_gatt_find_by_uuid(NULL, 0 , BT_UUID_CUSTOM_CHAR3);
+    p_char4_attr = bt_gatt_find_by_uuid(NULL, 0 , BT_UUID_CUSTOM_CHAR4);
+    LOG_INF("Attribute handle %p, %p", p_char3_attr, p_char4_attr);
+}
+
+int char3_send_notify(uint8_t* p_data, uint16_t len)
+{
+    param_check(p_data != NULL);
+    if(p_char3_attr == NULL)
+    {
+        LOG_ERR("Can't find CUSTOM_CHAR3 attribute handle");
+        return FAILURE;
+    }
+    int ret_val = SUCCESS;
+    if(!g_char3_notify_en)
+    {
+        LOG_WRN("CUSTOM_CHAR3 notification disable");
+    }
+    else 
+    {
+        LOG_INF("CUSTOM_CHAR3 sending %dB notification", len);
+        ret_val = bt_gatt_notify(NULL, p_char3_attr, p_data, len);
+    }
+    return ret_val;
+}
+
+int char4_send_notify(uint8_t* p_data, uint16_t len)
+{
+    param_check(p_data != NULL);
+    if(p_char4_attr == NULL)
+    {
+        LOG_ERR("Can't find CUSTOM_CHAR4 attribute handle");
+        return FAILURE;
+    }
+    int ret_val = SUCCESS;
+    if(!g_char4_notify_en)
+    {
+        LOG_WRN("CUSTOM_CHAR4 notification disable");
+    }
+    else 
+    {
+        LOG_INF("CUSTOM_CHAR4 sending %dB notification", len);
+        ret_val = bt_gatt_notify(NULL, p_char4_attr, p_data, len);
+    }
+    return ret_val;
+}
+
 
 /*
-
-#define BT_UUID_CUSTOM_SERV1    BT_UUID_DECLARE_128(BT_CUSTOM_SERV1_UUID)
-#define BT_UUID_CUSTOM_CHAR1    BT_UUID_DECLARE_128(BT_CUSTOM_CHAR1_UUID)
-#define BT_UUID_CUSTOM_CHAR2    BT_UUID_DECLARE_128(BT_CUSTOM_CHAR2_UUID)
-#define BT_UUID_CUSTOM_CHAR3    BT_UUID_DECLARE_128(BT_CUSTOM_CHAR3_UUID)
-#define BT_UUID_CUSTOM_CHAR4    BT_UUID_DECLARE_128(BT_CUSTOM_CHAR4_UUID)
-#define BT_UUID_CUSTOM_CHAR5    BT_UUID_DECLARE_128(BT_CUSTOM_CHAR5_UUID)
-
-
-BLE custom characteristic attribute table (Characteristic UUID  |  Properties | Permission)
-Custom char1: read / permit read/write
-Custom char2: read / permit read/write
-Custom char3: read + notify | permit read/write
-Custom char4: read + notify | permit read/write
-Custom char5: write | permit read/write
 
 */
 BT_GATT_SERVICE_DEFINE(CUSTOM_SERVICE1_NAME,
@@ -308,7 +349,7 @@ BT_GATT_PRIMARY_SERVICE(BT_UUID_CUSTOM_SERV1),
                     BT_GATT_PERM_READ | BT_GATT_PERM_WRITE, /* No security enable */
                     custom_char4_read_cb, NULL, NULL),
     BT_GATT_CCC(custom_char4_notify_changed, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
-    // // Custom char5
+    // Custom char5
     BT_GATT_CHARACTERISTIC(BT_UUID_CUSTOM_CHAR5,
                     BT_GATT_CHRC_WRITE,
                     BT_GATT_PERM_READ | BT_GATT_PERM_WRITE, /* No security enable */
