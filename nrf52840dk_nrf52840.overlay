@@ -1,26 +1,106 @@
-&pinctrl {
-    uart1_default: uart1_default {
-		group1 {
-			psels = <NRF_PSEL(UART_RX, 0, 3)>;
-			bias-pull-up;
-		};
-		group2 {
-			psels = <NRF_PSEL(UART_TX, 0, 2)>;
-		};
-	};
-
-	uart1_sleep:
-     uart1_sleep {
-		group1 {
-			psels = <NRF_PSEL(UART_RX, 0, 3)>,
-				<NRF_PSEL(UART_TX, 0, 2)>;
-			low-power-enable;
-		};
-	};
-}; 
-
 / {
 	chosen {
 		nordic,app-uart = &uart1;
 	};
+};
+
+/ {
+	zephyr,user {
+		digital-pin-gpios = <&arduino_header 6 0>,	/* Digital */
+				    		<&arduino_header 7 0>,
+				    		<&arduino_header 8 0>,
+				    		<&arduino_header 9 0>,
+				    		<&arduino_header 10 0>,
+				    		<&arduino_header 11 0>,
+				    		<&arduino_header 12 0>,
+				    		<&arduino_header 13 0>,
+				    		<&arduino_header 14 0>,
+				    		<&arduino_header 15 0>,
+				    		<&arduino_header 16 0>,
+				    		<&arduino_header 17 0>,
+				    		<&arduino_header 18 0>,
+				    		<&arduino_header 19 0>,
+				    		<&arduino_header 20 0>,
+				    		<&arduino_header 21 0>,
+				    		<&arduino_header 0 0>,	/* Analog */
+				    		<&arduino_header 1 0>,
+				    		<&arduino_header 2 0>,
+				    		<&arduino_header 3 0>,
+				    		<&arduino_header 4 0>,
+				    		<&arduino_header 5 0>,
+				    		<&gpio0 13 GPIO_ACTIVE_LOW>;
+
+		pwm-pin-gpios =     <&gpio0 13 GPIO_ACTIVE_LOW>,
+				   			<&arduino_header 9 0>,
+				   			<&arduino_header 11 0>,
+				   			<&arduino_header 12 0>,
+				   			<&arduino_header 15 0>,
+				   			<&arduino_header 16 0>,
+				   			<&arduino_header 17 0>;
+
+		pwms =	<&pwm0 1 255 PWM_POLARITY_NORMAL>,
+				<&pwm0 2 255 PWM_POLARITY_NORMAL>,
+				<&pwm0 3 255 PWM_POLARITY_NORMAL>,
+				<&pwm1 0 255 PWM_POLARITY_NORMAL>,
+				<&pwm1 1 255 PWM_POLARITY_NORMAL>,
+				<&pwm1 2 255 PWM_POLARITY_NORMAL>;
+
+	};
+};
+
+
+&pinctrl {
+
+// TODO: Assigned multiplexing pins for PWM0 and PWM1 channels
+	pwm0_default: pwm0_default {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 0, 13)>, /* keep original config */
+				<NRF_PSEL(PWM_OUT1, 1, 4)>,
+				<NRF_PSEL(PWM_OUT2, 1, 6)>,
+				<NRF_PSEL(PWM_OUT3, 1, 7)>;
+				nordic,invert;
+		};
+	};
+
+	pwm0_sleep: pwm0_sleep {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 0, 13)>, /* keep original config */
+				<NRF_PSEL(PWM_OUT1, 1, 4)>,
+				<NRF_PSEL(PWM_OUT2, 1, 6)>,
+				<NRF_PSEL(PWM_OUT3, 1, 7)>;
+				low-power-enable;
+		};
+	};
+
+	pwm1_default: pwm1_default {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 1, 11)>,
+				<NRF_PSEL(PWM_OUT1, 1, 12)>,
+				<NRF_PSEL(PWM_OUT2, 1, 13)>;
+				nordic,invert;
+		};
+	};
+
+	pwm1_sleep: pwm1_sleep {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 1, 11)>,
+				<NRF_PSEL(PWM_OUT1, 1, 12)>,
+				<NRF_PSEL(PWM_OUT2, 1, 13)>;
+				low-power-enable;
+		};
+	};
+};
+
+&pwm0 {
+	status = "okay";
+	pinctrl-0 = <&pwm0_default>;
+	pinctrl-1 = <&pwm0_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+&pwm1 {
+	status = "okay";
+	pinctrl-0 = <&pwm1_default>;
+	pinctrl-1 = <&pwm1_sleep>;
+	pinctrl-names = "default", "sleep";
 };

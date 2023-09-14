@@ -25,10 +25,12 @@ src/ble/bluetoothle.c
     src/ble/ble_gatt.c
     src/app/app_ble.c
     src/app/app_uart.c
+    src/driver/pwm.c
 )
 zephyr_library_include_directories(src/framework)
 zephyr_library_include_directories(src/app)
 zephyr_library_include_directories(src/ble)
+zephyr_library_include_directories(src/driver)
 
 
 
