@@ -3,6 +3,7 @@
 #include <zephyr/types.h>
 
 
+#include "hal.h"
 #include "logging/log.h"
 #define MODULE_NAME			        main
 #define MODULE_LOG_LEVEL	        LOG_LEVEL_DBG
@@ -121,29 +122,32 @@ void adc_custom_task(void *pvParameters)
     {
         LOG_ERR("Failed to init ADC");
     }
-    int adc_raw[8]={0};
-    int adc_voltage[8]={0};
+
     while(1)
     {
+        int adc_raw[8]={0};
+        int adc_voltage[8]={0};
         for(uint8_t idx=0; idx < 8; idx++)
         {
-            adc_raw[idx] = hal__ADCRead(idx);
-            if(adc_raw[idx] < 0)
+            adc_voltage[idx] = hal__ADCReadMV(idx);
+            if(adc_voltage[idx] == FAILURE)
             {
                 LOG_ERR("Failed to read ADC channel %d", idx);
                 continue;
             }
-            adc_voltage[idx] = hal__ADCReadMV(idx);
-            if(adc_voltage[idx] < 0)
+            else if(adc_voltage[idx] < 0)
             {
-                LOG_ERR("Failed to read ADC channel %d", idx);
-                continue;
+                LOG_WRN("ADC channel %d read value %d", idx, adc_voltage[idx]);
+            }
+            else
+            {
+                // Normal
             }
         }
         // RAW: [%d %d %d %d %d %d %d %d]\n", adc_raw[0], adc_raw[1], adc_raw[2], adc_raw[3], adc_raw[4], adc_raw[5], adc_raw[6], adc_raw[7]
         LOG_INF("ADC: [%d %d %d %d %d %d %d %d]\n", adc_voltage[0], adc_voltage[1], adc_voltage[2], adc_voltage[3], adc_voltage[4], adc_voltage[5], adc_voltage[6], adc_voltage[7]);
         // mV: [%d %d %d %d %d %d %d %d]\n", adc_voltage[0], adc_voltage[1], adc_voltage[2], adc_voltage[3], adc_voltage[4], adc_voltage[5], adc_voltage[6], adc_voltage[7]
-        k_msleep(2000);
+        k_msleep(1000);
     }
 }
 #endif /* End of (APP_TEST_ADC != 0) */
@@ -206,7 +210,9 @@ void main(void)
     pwm_custom_task(NULL);
 #endif /* End of (APP_TEST_PWM != 0) */
 
-
+#if (APP_TEST_ADC != 0 )
+    adc_custom_task(NULL);
+#endif /* End of (APP_TEST_ADC != 0 ) */
 
     while (1)
     {
