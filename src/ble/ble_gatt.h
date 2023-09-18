@@ -28,9 +28,9 @@
 * Includes
 *******************************************************************************/
 #include <stdint.h>
-#include <zephyr/bluetooth/bluetooth.h>
-#include <zephyr/bluetooth/uuid.h>
-#include <zephyr/bluetooth/gatt.h>
+#include <bluetooth/bluetooth.h>
+#include <bluetooth/uuid.h>
+#include <bluetooth/gatt.h>
 
 /******************************************************************************
 * Preprocessor Constants

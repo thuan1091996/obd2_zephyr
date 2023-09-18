@@ -23,7 +23,6 @@
 * Includes
 *******************************************************************************/
 /* Zephyr include */
-#include <zephyr/logging/log.h>
 #include <assert.h>
 
 /* Applications include */
@@ -45,6 +44,7 @@
 * Module Preprocessor Macros
 *******************************************************************************/
 /* Logging relative */
+#include <zephyr/logging/log.h>
 #define MODULE_NAME			        ble_app
 #define MODULE_LOG_LEVEL	        LOG_LEVEL_INF
 LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);

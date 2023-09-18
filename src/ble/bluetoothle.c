@@ -22,14 +22,15 @@
 /******************************************************************************
 * Includes
 *******************************************************************************/
-#include <zephyr/logging/log.h>
 #include "bluetoothle.h"
 #include "ble_gatt.h"
-#include "common.h"
+
+#include "hal.h"
 /******************************************************************************
 * Module configs
 *******************************************************************************/
 /* Logging relative */
+#include <logging/log.h>
 #define MODULE_NAME			        bluetoothle
 #define MODULE_LOG_LEVEL	        LOG_LEVEL_INF
 LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);

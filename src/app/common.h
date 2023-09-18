@@ -27,7 +27,6 @@
 /******************************************************************************
 * Includes
 *******************************************************************************/
-#include "qpc.h"
 
 /******************************************************************************
 * Preprocessor Constants
@@ -48,12 +47,6 @@
 
 #define BLE_ADV_TIMEOUT                     (30000U)
 
-#define SUCCESS                 0
-#define FAILURE                 -1
-
-#define param_check(param)	    if ( !(param) ) return FAILURE
-#define error_check(con, error) if ( con ) return error
-
 
 /******************************************************************************
 * Configuration Constants
@@ -69,7 +62,7 @@
 * Typedefs
 *******************************************************************************/
 enum ApplicationEvt {
-    TIMEOUT_SIG = Q_USER_SIG,       /* Timer timeout */
+    // TIMEOUT_SIG = Q_USER_SIG,       /* Timer timeout */
     TIMEOUT_BLINK_SIG,
 
     BLE_EVT_SIG,
@@ -87,7 +80,7 @@ enum ApplicationEvt {
 /******************************************************************************
 * Variables
 *******************************************************************************/
-extern QActive * const p_app_actor;
+// extern QActive * const p_app_actor;
 
 /******************************************************************************
 * Function Prototypes

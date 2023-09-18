@@ -23,13 +23,13 @@
 * Includes
 *******************************************************************************/
 
-#include <zephyr/logging/log.h>
 #include "bluetoothle.h"
 #include "ble_gatt.h"
-#include "common.h"
+#include "hal.h"
 /******************************************************************************
 * Module Preprocessor Constants
 *******************************************************************************/
+#include <logging/log.h>
 #define MODULE_NAME			        gatt_sensor
 #define MODULE_LOG_LEVEL	        LOG_LEVEL_DBG
 LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
