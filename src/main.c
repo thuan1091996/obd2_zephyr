@@ -11,9 +11,10 @@ LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
 
 
 #define APP_TEST_BLE            (0)
-#define APP_TEST_PWM            (1)
+#define APP_TEST_PWM            (0)
 #define APP_TEST_ADC            (0)
 #define APP_TEST_GPIO           (0)
+#define APP_TEST_UART           (1)
 
 
 #if (APP_TEST_BLE != 0)
@@ -196,6 +197,43 @@ void gpio_custom__task(void *pvParameters)
 }
 #endif /* End of (APP_TEST_GPIO!= 0) */
 
+#if (APP_TEST_UART != 0)
+void uart_custom_task(void* p_param)
+{
+    int status = __InitUART();
+    if(status != 0)
+    {
+        LOG_ERR("Failed to init UART with error code %d", status);
+        return;
+    }
+    while(1)
+    {
+        int size = hal__UARTAvailable(0);
+        if(size > 0)
+        {
+            uint8_t data[128]={0};
+            hal__UARTRead(0, data, size);
+            LOG_INF("UART0 recv %dB", size);
+            // Echo back
+            hal__UARTWrite(0, data, size);
+            LOG_HEXDUMP_INF(data, size, "UART0 recv: ");
+        }
+
+        size = hal__UARTAvailable(1);
+        if(size > 0)
+        {
+            uint8_t data[128]={0};
+            hal__UARTRead(1, data, size);
+            LOG_INF("UART1 recv %dB", size);
+            // Echo back
+            hal__UARTWrite(1, data, size);
+            LOG_HEXDUMP_INF(data, size, "UART1 recv: ");
+        }
+        k_msleep(1000);
+    }
+}
+#endif /* End of (APP_TEST_UART != 0) */
+
 void main(void)
 {
 #if (APP_TEST_BLE != 0)
@@ -213,6 +251,10 @@ void main(void)
 #if (APP_TEST_ADC != 0 )
     adc_custom_task(NULL);
 #endif /* End of (APP_TEST_ADC != 0 ) */
+
+#if (APP_TEST_UART != 0)
+    uart_custom_task(NULL);
+#endif /* End of (APP_TEST_UART != 0) */
 
     while (1)
     {
