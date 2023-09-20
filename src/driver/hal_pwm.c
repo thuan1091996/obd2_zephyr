@@ -98,13 +98,6 @@ int __InitPWM()
 			LOG_ERR("Error: PWM device %s is not ready\n", pwm0_device[idx]->name);
 			return FAILURE;
 		}
-		int status = __hal__setPeriod(idx, PWM0_DEFAULT_PERIOD_USEC);
-		if (status != SUCCESS)
-		{
-			LOG_ERR("Error: Failed to set period to %d (us) for channel %d\n", PWM0_DEFAULT_PERIOD_USEC, idx);
-			return FAILURE;
-		}
-		
 	}
 	LOG_INF("Init PWM0 success");
 	return SUCCESS;
@@ -116,9 +109,16 @@ int hal__setDutyCycle(uint8_t channel_num, uint16_t dutyCycle_tenth)
 {
 	param_check((channel_num >= 0) && (channel_num < 4));
 	param_check(dutyCycle_tenth <= 1000 && dutyCycle_tenth >= 0);
-	#if 0
-	 return led_set_brightness(pwm0_device[channel_num], 0, dutyCycle_tenth / 10);
-	#else
+
+	//Check if period is set (non-zero)
+	if(pwm0_period[channel_num] == 0)
+	{
+		int status = __hal__setPeriod(channel_num, PWM0_DEFAULT_PERIOD_USEC);
+		if (status != SUCCESS)
+		{
+			LOG_ERR("Error: Failed to set period to %d (us) for channel %d\n", PWM0_DEFAULT_PERIOD_USEC, channel_num);
+			return FAILURE;
+		}
+	}
 	return pwm_pin_set_usec(pwm0_device[channel_num], pwm0_channel[channel_num], pwm0_period[channel_num], pwm0_period[channel_num] * dutyCycle_tenth / 1000, PWM0_DEFAULT_FLAGS);
-	#endif
 }
