@@ -21,6 +21,7 @@ src/ble/bluetoothle.c
     
     src/ble/bluetoothle.c
     src/ble/ble_gatt.c
+    src/driver/hal.c
     src/driver/hal_adc.c
     src/driver/hal_gpio.c
     src/driver/hal_i2c.c

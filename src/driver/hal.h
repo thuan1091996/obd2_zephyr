@@ -33,6 +33,7 @@ extern "C" {
 
 
 int hal__init(); //Initialize HAL. Returns 0 on success, -1 on failure.
+int __InitGPIO();
 int __InitUART();
 int __InitI2C();
 int __InitADC();
@@ -51,6 +52,7 @@ int hal__setState(uint8_t pinNum, uint8_t state); //(0,0) sets pin 0 as input, (
 //Note: link pinNum to the datasheet labels in a logical way PA[0:15], PB[0:15], PC[0:15], etc.
 
 /* UART_HELPER_FUNCTIONS */
+int hal__UARTInit(uint8_t uartNum); //Initialize UART. Returns 0 on success, -1 on failure.
 int hal__UARTAvailable(uint8_t uartNum); //Returns number of bytes available to read from UART. Returns 0 on success, -1 on failure.  //NOTE: if API limitations only allow for knowing IF data is available, return 1 if data is available.
 
 int hal__UARTWrite_uint8(uint8_t uartNum, uint8_t data); //Write data to UART. Returns 0 on success, -1 on failure.
@@ -61,7 +63,7 @@ int hal__UARTRead(uint8_t uartNum, uint8_t *data, uint16_t len); //Read data fro
 int hal__UARTFlushRX(uint8_t uartNum); //Flush RX buffer. Returns 0 on success, -1 on failure.
 /* I2C_HELPER_FUNCTIONS */
 bool hal__I2CEXISTS(uint8_t i2c_num, uint8_t ADDR); //Returns true if I2C device exists at ADDR, false if not.
-
+int hal__I2CINIT(uint8_t i2cNum); //Initialize I2C. Returns 0 on success, -1 on failure.
 int hal__I2CREAD_uint8(uint8_t i2c_num, uint8_t ADDR, uint8_t REG, uint8_t *data); //Read data from I2C device at ADDR, register REG. Returns 0 on success, -1 on failure.
 int hal__I2CREAD(uint8_t i2c_num, uint8_t ADDR, uint8_t REG, uint8_t *data, uint16_t len); //Read data from I2C device at ADDR, register REG. Returns number of bytes read on success, -1 on failure.
 

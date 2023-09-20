@@ -27,7 +27,7 @@
 
 #include "logging/log.h"
 #define MODULE_NAME			        hal_adc
-#define MODULE_LOG_LEVEL	        LOG_LEVEL_ERR
+#define MODULE_LOG_LEVEL	        LOG_LEVEL_INF
 LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
 
 /******************************************************************************

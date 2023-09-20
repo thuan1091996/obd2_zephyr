@@ -236,6 +236,11 @@ void uart_custom_task(void* p_param)
 
 void main(void)
 {
+    if (SUCCESS != hal__init())
+    {
+        LOG_ERR("Failed to init HAL");
+        return;
+    }
 #if (APP_TEST_BLE != 0)
     ble_test();
 #endif /* End of (APP_TEST_BLE != 0) */

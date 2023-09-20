@@ -21,8 +21,8 @@
 
 #include <devicetree.h>
 #include <drivers/gpio.h>
-#include "logging/log.h"
 
+#include "logging/log.h"
 #define MODULE_NAME			        hal_gpio
 #define MODULE_LOG_LEVEL	        LOG_LEVEL_DBG
 LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
@@ -52,11 +52,7 @@ static const struct device *gpio0_device = DEVICE_DT_GET(DT_NODELABEL(gpio0));
 *******************************************************************************/
 int __InitGPIO(void)
 {
-    if (device_is_ready(gpio0_device))
-    {
-        LOG_INF("GPIO0 is ready");
-    }
-    else
+    if (!device_is_ready(gpio0_device))
     {
         LOG_ERR("GPIO0 is not ready");
         return FAILURE;
