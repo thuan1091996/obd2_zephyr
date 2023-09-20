@@ -70,6 +70,21 @@ uint16_t pwm0_period[PWM0_NUMB_CHANNELS] = {0};
 /******************************************************************************
 * Functions definitions
 *******************************************************************************/
+int __InitPWM()
+{
+	for (uint8_t idx = 0; idx < ARRAY_SIZE(pwm0_device); idx++)
+	{
+		if (!device_is_ready(pwm0_device[idx]))
+		{
+			LOG_ERR("Error: PWM device %s is not ready\n", pwm0_device[idx]->name);
+			return FAILURE;
+		}
+	}
+	LOG_INF("Init PWM0 success");
+	return SUCCESS;
+}
+
+
 /**
  * @brief Set the period of a PWM channel
  * @param channel_num The channel number [0, 3]
@@ -89,28 +104,12 @@ int __hal__setPeriod(uint8_t channel_num, uint16_t period_usec)
 	return SUCCESS;
 }
 
-int __InitPWM()
-{
-	for (uint8_t idx = 0; idx < ARRAY_SIZE(pwm0_device); idx++)
-	{
-		if (!device_is_ready(pwm0_device[idx]))
-		{
-			LOG_ERR("Error: PWM device %s is not ready\n", pwm0_device[idx]->name);
-			return FAILURE;
-		}
-	}
-	LOG_INF("Init PWM0 success");
-	return SUCCESS;
-}
-
-
-
 int hal__setDutyCycle(uint8_t channel_num, uint16_t dutyCycle_tenth)
 {
 	param_check((channel_num >= 0) && (channel_num < 4));
 	param_check(dutyCycle_tenth <= 1000 && dutyCycle_tenth >= 0);
 
-	//Check if period is set (non-zero)
+	//Check if first time called (period haven't set yet)
 	if(pwm0_period[channel_num] == 0)
 	{
 		int status = __hal__setPeriod(channel_num, PWM0_DEFAULT_PERIOD_USEC);

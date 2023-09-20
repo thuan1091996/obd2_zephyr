@@ -37,6 +37,7 @@ int __InitGPIO();
 int __InitUART();
 int __InitI2C();
 int __InitADC();
+int __InitPWM();
 
 /* TIMER_HELPER_FUNCTIONS */
 int hal__setDutyCycle(uint8_t pinNum, uint16_t dutyCycle_tenth); 

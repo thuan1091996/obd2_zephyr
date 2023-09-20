@@ -56,7 +56,7 @@ LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
 /******************************************************************************
 * Module Preprocessor Configs
 *******************************************************************************/
-#define UART_CONF_DUMP_RX_DATA          (1) // Set to 1 to dump UART RX data when received
+#define UART_CONF_DUMP_RX_DATA          (0) // Set to 1 to dump UART RX data when received
 
 
 /******************************************************************************
