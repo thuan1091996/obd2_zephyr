@@ -1,0 +1,89 @@
+&pwm0 {
+	status = "okay";
+	ch0-pin = < 13 >;
+	ch1-pin = < 11 >;
+	ch2-pin = < 2 >;
+	ch3-pin = < 15 >;
+	/delete-property/ ch0-inverted;
+};
+
+&adc {
+	status = "okay";
+	io-channels = <&adc 0>, <&adc 1>, <&adc 2>, <&adc 3>, <&adc 4>, <&adc 5>, <&adc 6>, <&adc 7>;
+};
+
+&uart0 {
+	status = "okay";
+	tx-pin = < 19 >;
+	rx-pin = < 20 >;
+	/delete-property/ cts-pin;
+	/delete-property/ rts-pin;
+};
+
+&spi1 {
+	status = "disabled";
+};
+
+&spi2 {
+	status = "disabled";
+};
+
+&i2c0 {
+    sda-pin = <23>;
+    scl-pin = <22>;
+};
+
+/delete-node/ &led0;
+/delete-node/ &led1;
+/delete-node/ &led2;
+/delete-node/ &led3;
+/delete-node/ &button0;
+/delete-node/ &button1;
+/delete-node/ &button2;
+/delete-node/ &button3;
+/delete-node/ &sw_pwm;
+
+
+/ {
+	aliases {
+		/delete-property/ led0;
+		/delete-property/ led1;
+		/delete-property/ led2;
+		/delete-property/ led3;
+		/delete-property/ sw0;
+		/delete-property/ sw1;
+		/delete-property/ sw2;
+		/delete-property/ sw3;
+		/delete-property/ bootloader-led0;
+
+	};
+	/delete-node/ leds;
+	/delete-node/ buttons;
+
+	pwmleds {
+		compatible = "pwm-leds";
+		pwm_led0: pwm_led_0 {
+			pwms =	<&pwm0 13>, 
+					<&pwm0 11>,
+					<&pwm0 2>,
+					<&pwm0 15>;
+		};
+	};
+
+	adc_pins: adc_pins {
+		compatible = "arduino,uno-adc"; // Custom compatible, ignore this line
+		#io-channel-cells = <1>;
+		// Mapping ADC channels to pins
+		// Format < [adc channel] &adc [IO pin number]>
+		io-channel-map = 
+				<0 &adc 2>,	 /* A0 = P0.2 */
+				<1 &adc 3>,	 /* A1 = P0.4 */
+				<2 &adc 4>,	 /* A2 = P0.2 */
+				<3 &adc 5>,	 /* A3 = P0.2 */
+				<4 &adc 28>, /* A4 = P0.28 */
+				<5 &adc 29>, /* A5 = P0.29 */
+				<6 &adc 30>, /* A6 = P0.30 */
+				<7 &adc 31>; /* A7 = P0.31 */
+	};
+
+};
