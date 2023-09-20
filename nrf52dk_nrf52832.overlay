@@ -1,8 +1,8 @@
 &pwm0 {
 	status = "okay";
-	ch0-pin = < 13 >;
+	ch0-pin = < 2 >;
 	ch1-pin = < 11 >;
-	ch2-pin = < 2 >;
+	ch2-pin = < 14 >;
 	ch3-pin = < 15 >;
 	/delete-property/ ch0-inverted;
 };
@@ -63,9 +63,9 @@
 	pwmleds {
 		compatible = "pwm-leds";
 		pwm_led0: pwm_led_0 {
-			pwms =	<&pwm0 13>, 
+			pwms =	<&pwm0 2>, 
 					<&pwm0 11>,
-					<&pwm0 2>,
+					<&pwm0 14>,
 					<&pwm0 15>;
 		};
 	};
@@ -77,9 +77,9 @@
 		// Format < [adc channel] &adc [IO pin number]>
 		io-channel-map = 
 				<0 &adc 2>,	 /* A0 = P0.2 */
-				<1 &adc 3>,	 /* A1 = P0.4 */
-				<2 &adc 4>,	 /* A2 = P0.2 */
-				<3 &adc 5>,	 /* A3 = P0.2 */
+				<1 &adc 3>,	 /* A1 = P0.3 */
+				<2 &adc 4>,	 /* A2 = P0.4 */
+				<3 &adc 5>,	 /* A3 = P0.5 */
 				<4 &adc 28>, /* A4 = P0.28 */
 				<5 &adc 29>, /* A5 = P0.29 */
 				<6 &adc 30>, /* A6 = P0.30 */
