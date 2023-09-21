@@ -77,7 +77,8 @@ int hal__ADCReadMV(uint8_t pin);
 
 /* Common functions */
 int hal__getStackSize(void); //Returns the stack size of the current task. Returns current stack size on success, -1 on failure.
-
+void System_EnableResetPin(void);
+void System_DisableResetPin(void);
 #ifdef __cplusplus
 }
 #endif
