@@ -26,7 +26,6 @@
 #include <drivers/pwm.h>
 #include <zephyr.h>
 
-
 #include "hal.h"
 /******************************************************************************
 * Module Preprocessor Constants
@@ -42,7 +41,7 @@ LOG_MODULE_REGISTER(MODULE_NAME, MODULE_LOG_LEVEL);
 
 #define PWM0_DEFAULT_FLAGS          0
 #define PWM0_NUMB_CHANNELS	        4	
-#define PWM0_DEFAULT_PERIOD_USEC	1000 // 1KHz
+#define PWM0_DEFAULT_PERIOD_USEC	1000 // 1000 * 1us = 1ms ~ 1kHz
 /******************************************************************************
 * Module Typedefs
 *******************************************************************************/
@@ -83,8 +82,6 @@ int __InitPWM()
 	LOG_INF("Init PWM0 success");
 	return SUCCESS;
 }
-
-
 /**
  * @brief Set the period of a PWM channel
  * @param channel_num The channel number [0, 3]
@@ -104,6 +101,17 @@ int __hal__setPeriod(uint8_t channel_num, uint16_t period_usec)
 	return SUCCESS;
 }
 
+
+
+/**
+ * @brief PWM set duty cycle
+ * 
+ * @param channel_num: Valid values are 0 to 3, corresponding to the 4 PWM channels
+ * @param dutyCycle_tenth: Valid values are 0 to 1000, corresponding to 0% to 100% duty cycle
+ * @return int 0 if successful, otherwise a (negative) error code.
+ * @note: PWM0 channels [0 1 2 3] <=> [P0.13 P0.11 P0.2 P0.15]
+ * The PWM channel can be change to any GPIO pin via overlay file in zephyr directory
+ */
 int hal__setDutyCycle(uint8_t channel_num, uint16_t dutyCycle_tenth)
 {
 	param_check((channel_num >= 0) && (channel_num < 4));
